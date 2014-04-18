@@ -32,6 +32,7 @@ import 'package:angular/directive/static_keys.dart';
 import 'dart:collection';
 
 part 'a_href.dart';
+part 'form_control.dart';
 part 'ng_base_css.dart';
 part 'ng_bind.dart';
 part 'ng_bind_html.dart';
@@ -41,7 +42,6 @@ part 'ng_events.dart';
 part 'ng_cloak.dart';
 part 'ng_if.dart';
 part 'ng_include.dart';
-part 'ng_control.dart';
 part 'ng_model.dart';
 part 'ng_pluralize.dart';
 part 'ng_repeat.dart';
@@ -108,7 +108,7 @@ class DirectiveModule extends Module {
     bind(NgStyle, toValue: null);
     bind(NgNonBindable, toValue: null);
     bind(NgTemplate, toValue: null);
-    bind(NgControl, toValue: new NgNullControl());
+    bind(FormControl, toValue: new NullFormControl());
     bind(NgForm, toValue: new NgNullForm());
 
     bind(NgModelRequiredValidator, toValue: null);

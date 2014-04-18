@@ -107,6 +107,7 @@ main() {
         "angular.core.annotation_src.DirectiveBinder",
         "angular.core.annotation_src.DirectiveBinderFn",
         "angular.core.annotation_src.Formatter",
+        "angular.core.annotation_src.Injectable",
         "angular.core.annotation_src.NgAttr",
         "angular.core.annotation_src.NgCallback",
         "angular.core.annotation_src.NgOneWay",
