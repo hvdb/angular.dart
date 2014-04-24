@@ -229,7 +229,6 @@ main() {
         "angular.formatter_internal.OrderBy",
         "angular.formatter_internal.Stringify",
         "angular.formatter_internal.Uppercase",
-        "angular.introspection.getTestability",
         "angular.introspection.ngDirectives",
         "angular.introspection.ngInjector",
         "angular.introspection.ngProbe",
