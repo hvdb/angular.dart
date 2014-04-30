@@ -337,7 +337,7 @@ class DirectiveInjector implements DirectiveBinder {
 
   NgElement get ngElement {
     if (_ngElement == null) {
-      _ngElement = new NgElement(_node, scope, _animate);
+      _ngElement = new NgElement(_node, scope, _animate, _eventHandler);
     }
     return _ngElement;
   }

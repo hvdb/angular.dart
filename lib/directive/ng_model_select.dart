@@ -24,6 +24,7 @@ part of angular.directive;
 class InputSelect implements AttachAware {
   final expando = new Expando<OptionValue>();
   final dom.SelectElement _selectElement;
+  final NgElement _selectNgElement;
   final NodeAttrs _attrs;
   final NgModel _model;
   final Scope _scope;
@@ -34,8 +35,8 @@ class InputSelect implements AttachAware {
   _SelectMode _mode = new _SelectMode(null, null, null);
   bool _dirty = false;
 
-  InputSelect(dom.Element this._selectElement, this._attrs, this._model,
-              this._scope) {
+  InputSelect(dom.Element this._selectElement, this._attrs, this._model, this._scope,
+              this._selectNgElement) {
     _unknownOption.value = '?';
     _nullOption = _selectElement.querySelectorAll('option')
         .firstWhere((o) => o.value == '', orElse: () => null);
@@ -57,7 +58,8 @@ class InputSelect implements AttachAware {
       });
     });
 
-    _selectElement.onChange.listen((event) => _mode.onViewChange(event));
+    _selectNgElement.addEventListener('change', _mode.onViewChange);
+
     _model.render = (value) {
       // TODO(misko): this hack need to delay the rendering until after domRead
       // because the modelChange reads from the DOM. We should be able to render
