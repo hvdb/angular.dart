@@ -203,10 +203,15 @@ class ElementProbe {
   final DirectiveInjector injector;
   final Scope scope;
   List get directives => injector.directives;
+  final Map<String, List<Function>> listeners = {};
   final bindingExpressions = <String>[];
   final modelExpressions = <String>[];
 
   ElementProbe(this.parent, this.element, this.injector, this.scope);
 
   dynamic directive(Type type) => injector.get(type);
+
+  void addListener(String eventName, fn(Event)) {
+    listeners.putIfAbsent(eventName, () => []).add(fn);
+  }
 }

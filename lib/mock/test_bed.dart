@@ -13,16 +13,17 @@ class TestBed {
   final Compiler compiler;
   final Parser _parser;
   final Expando expando;
+  final EventHandler _eventHandler;
 
   Element rootElement;
   List<Node> rootElements;
   View rootView;
 
-  TestBed(this.injector, this.directiveInjector, this.rootScope, this.compiler, this._parser, this.expando);
-
+  TestBed(this.injector, this.directiveInjector, this.rootScope, this.compiler,
+          this._parser, this.expando, this._eventHandler);
   TestBed.fromInjector(Injector i) :
     this(i, i.get(DirectiveInjector), i.get(RootScope), i.get(Compiler),
-        i.get(Parser), i.get(Expando));
+        i.get(Parser), i.get(Expando), i.get(EventHandler));
 
 
   /**
@@ -75,8 +76,12 @@ class TestBed {
    * Trigger a specific DOM element on a given node to test directives
    * which listen to events.
    */
-  triggerEvent(element, name, [type='MouseEvent']) {
-    element.dispatchEvent(new Event.eventType(type, name));
+  triggerEvent(element, name, [String type='MouseEvent', emulateBubbling=false]) {
+    if (emulateBubbling == true) {
+      _eventHandler.walkDomTreeAndExecute(element, new Event.eventType(type, name));
+    } else {
+      element.dispatchEvent(new Event.eventType(type, name));
+    }
     // Since we are manually triggering event we need to simulate apply();
     rootScope.apply();
   }
