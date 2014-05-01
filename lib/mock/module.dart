@@ -56,13 +56,15 @@ part 'mock_window.dart';
  */
 class AngularMockModule extends Module {
   AngularMockModule() {
+    bind(MockApplication);
+    bind(Application, toImplementation: MockApplication);
     bind(ExceptionHandler, toImplementation: RethrowExceptionHandler);
     bind(TestBed);
     bind(Probe);
     bind(Logger);
     bind(MockHttpBackend);
-    bind(Element, toValue: document.body);
-    bind(Node, toValue: document.body);
+    bind(Element, toFactory: (app) => app.element, inject: [MockApplication]);
+    bind(Node, inject: [Element]);
     bind(HttpBackend, toInstanceOf: MOCK_HTTP_BACKEND_KEY);
     bind(VmTurnZone, toFactory: () {
       return new VmTurnZone()
@@ -73,4 +75,21 @@ class AngularMockModule extends Module {
     bind(MockWebPlatform, toValue: mockPlatform);
     bind(WebPlatform, toValue: mockPlatform);
   }
+}
+
+class MockApplication extends Application {
+  var _element;
+
+  Element get element {
+    if (_element == null) {
+      _element = new DivElement()..attributes['ng-app'] = '';
+    }
+    return _element;
+  }
+
+  void destroyElement() {
+    _element = null;
+  }
+
+  Injector createInjector() => throw 'MockApplications can not create injectors';
 }
