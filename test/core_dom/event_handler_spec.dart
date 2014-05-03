@@ -50,33 +50,34 @@ main() {
 
     it('should register and handle event', (TestBed _, Application app) {
       var e = _.compile(
+    it('should register and handle event', (TestBed _, Application app) {
         '''<div foo>
           <div on-abc="ctrl.invoked=true"></div>
         </div>''');
-      document.body.append(app.element..append(e));
+      app.attachToRenderDOM(e);
 
       _.triggerEvent(e.querySelector('[on-abc]'), 'abc');
       expect(_.getScope(e).context['ctrl'].invoked).toEqual(true);
     });
 
-    it('should allow registration using method', (TestBed _, Application app) {
+    it('should allow registration using method', (TestBed _, MockApplication app) {
       var e = _.compile(
       '''<div foo>
           <div baz></div>
         </div>''');
-      document.body.append(app.element..append(e));
+      app.attachToRenderDOM(e);
 
       _.triggerEvent(e.querySelector('[baz]'), 'cux');
       expect(_.getScope(e).context['ctrl'].invoked).toEqual(true);
     });
 
     it('should allow registration of multiple event handlers using method',
-        (TestBed _, Application app) {
+        (TestBed _, MockApplication app) {
       var e = _.compile(
           '''<div foo>
           <div baz></div>
         </div>''');
-      document.body.append(app.element..append(e));
+      app.attachToRenderDOM(e);
 
       _.triggerEvent(e.querySelector('[baz]'), 'cux');
       expect(_.getScope(e).context['ctrl'].invoked).toEqual(true);
@@ -89,7 +90,7 @@ main() {
           <div on-my-new-event="ctrl.invoked=true"></div>
         </div>''');
 
-      _.triggerEvent(e.querySelector('[on-my-new-event]'), 'myNewEvent', 'CustomEvent', true);
+      _.triggerEvent(e.querySelector('[on-my-new-event]'), 'myNewEvent', type: 'CustomEvent');
       var fooScope = _.getScope(e);
       expect(fooScope.context['ctrl'].invoked).toEqual(true);
     });
@@ -101,7 +102,7 @@ main() {
         </div>''');
 
       var el = e.querySelector('[on-abc]');
-      _.triggerEvent(el, 'abc', 'CustomEvent', true);
+      _.triggerEvent(el, 'abc', type: 'CustomEvent');
       _.rootScope.apply();
       expect(el.text).toEqual("new description");
     });
@@ -113,6 +114,7 @@ main() {
 
       var shadowRoot = e.shadowRoot;
       var span = shadowRoot.querySelector('span');
+      _.triggerEvent(span, 'abc', type: 'CustomEvent');
       _.triggerEvent(span, 'abc', 'CustomEvent', true);
       BarComponent ctrl = _.rootScope.context['barComponent'];
       expect(ctrl.invoked).toEqual(true);
@@ -128,7 +130,7 @@ main() {
 
       microLeap();
 
-      _.triggerEvent(e.querySelector('[on-abc]'), 'abc', 'CustomEvent', true);
+      _.triggerEvent(e.querySelector('[on-abc]'), 'abc', type: 'CustomEvent');
       var shadowRoot = e.querySelector('bar').shadowRoot;
       var shadowRootScope = _.getScope(shadowRoot);
       BarComponent ctrl = shadowRootScope.context['ctrl'];
