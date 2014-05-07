@@ -78,7 +78,7 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = 'abc';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model']).toEqual('abc');
 
         inputElement.value = 'def';
@@ -88,7 +88,7 @@ void main() {
       });
 
       it('should write to input only if the value is different',
-        (Injector i, Animate animate, EventHandler eventHandler) {
+        (Injector i, Animate animate, EventHandler eventHandler, Expando expando) {
 
         NodeAttrs nodeAttrs = new NodeAttrs(new DivElement());
 
@@ -100,8 +100,10 @@ void main() {
         nodeAttrs['ng-model'] = 'model';
         var model = new NgModel(scope, ngElement, dirInjector,
             nodeAttrs, new Animate(), null);
+        ElementProbe probe = new ElementProbe(null, element, i, scope);
+        expando[element] = probe;
         dom.querySelector('body').append(element);
-        var input = new InputTextLike(element, model, scope, ngModelOptions);
+        var input = new InputTextLike(element, model, ngElement, scope, ngModelOptions);
 
         element
             ..value = 'abc'
@@ -153,7 +155,7 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = '12';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model']).toEqual(12);
 
         inputElement.value = '14';
@@ -169,7 +171,7 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = '12';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model']).toEqual(12);
 
         _.rootScope.context['model'] = null;
@@ -184,15 +186,16 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = 'aa';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model'].isNaN).toBe(true);
         expect(ngModel.valid).toBe(false);
       });
 
-      it('should leave input unchanged when text does not represent a valid number', (Injector i) {
+      it('should leave input unchanged when text does not represent a valid number',
+          (Injector i, MockApplication app) {
         var modelFieldName = 'modelForNumFromInvalid1';
         var element = _.compile('<input type="number" ng-model="$modelFieldName">');
-        dom.querySelector('body').append(element);
+        app.attachToRenderDOM(element);
 
         if (!simulateTypingTextWithConfirmation(element, '1')) return; // skip test.
         element.value = ''; // reset input
@@ -203,7 +206,7 @@ void main() {
         // '1e1' is again a valid number (with an exponent)
 
         simulateTypingText(element, '1');
-        _.triggerEvent(element, 'change');
+        _.triggerEvent(element,name:  'change');
         expect(element.value).toEqual('1');
         expect(_.rootScope.context[modelFieldName]).toEqual(1);
 
@@ -211,19 +214,20 @@ void main() {
         // Because the text is not a valid number, the element value is empty.
         expect(element.value).toEqual('');
         // When the input is invalid, the model is [double.NAN]:
-        _.triggerEvent(element, 'change');
+        _.triggerEvent(element, name: 'change');
         expect(_.rootScope.context[modelFieldName].isNaN).toBeTruthy();
 
         simulateTypingText(element, '1');
-        _.triggerEvent(element, 'change');
+        _.triggerEvent(element, name: 'change');
         expect(element.value).toEqual('1e1');
         expect(_.rootScope.context[modelFieldName]).toEqual(10);
       });
 
-      it('should not reformat user input to equivalent numeric representation', (Injector i) {
+      it('should not reformat user input to equivalent numeric representation',
+          (Injector i, MockApplication app) {
         var modelFieldName = 'modelForNumFromInvalid2';
         var element = _.compile('<input type="number" ng-model="$modelFieldName">');
-        dom.querySelector('body').append(element);
+        app.attachToRenderDOM(element);
 
         if (!simulateTypingTextWithConfirmation(element, '1')) return; // skip test.
         element.value = ''; // reset input
@@ -256,7 +260,7 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = '42';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model']).toEqual(42);
 
         inputElement.value = '43';
@@ -272,7 +276,7 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = '';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model'].isNaN).toBeTruthy();
       });
 
@@ -283,7 +287,7 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = '42';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model']).toEqual(42);
 
         inputElement.value = '43';
@@ -299,7 +303,7 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = '';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model']).toBeDefined();
       });
 
@@ -357,7 +361,7 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = 'abc';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model']).toEqual('abc');
 
         inputElement.value = 'def';
@@ -368,7 +372,7 @@ void main() {
       });
 
       it('should write to input only if value is different',
-        (Injector i, Animate animate, EventHandler eventHandler) {
+        (Injector i, Animate animate, EventHandler eventHandler, Expando expando, MockApplication app) {
 
         NodeAttrs nodeAttrs = new NodeAttrs(new DivElement());
 
@@ -380,7 +384,10 @@ void main() {
         nodeAttrs['ng-model'] = 'model';
         var model = new NgModel(scope, ngElement, dirInjector,
             nodeAttrs, new Animate(), null);
-        dom.querySelector('body').append(element);
+        ElementProbe probe = new ElementProbe(null, element, i, scope);
+        expando[element] = probe;
+        // selectionStart and selectionEnd do not work if element is not attached to DOM.
+        app.attachToRenderDOM(element);
         var input = new InputTextLike(element, model, scope, ngModelOptions);
 
         element
@@ -450,7 +457,7 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = 'abc';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model']).toEqual('abc');
 
         inputElement.value = 'def';
@@ -460,7 +467,8 @@ void main() {
       });
 
       it('should write to input only if value is different',
-        (Injector i, Animate animate, EventHandler eventHandler) {
+        (Injector i, Animate animate, EventHandler eventHandler, Expando expando,
+         MockApplication app) {
 
         NodeAttrs nodeAttrs = new NodeAttrs(new DivElement());
 
@@ -472,7 +480,10 @@ void main() {
         nodeAttrs['ng-model'] = 'model';
         var model = new NgModel(scope, ngElement, dirInjector,
             nodeAttrs, new Animate(), null);
-        dom.querySelector('body').append(element);
+        ElementProbe probe = new ElementProbe(null, element, i, scope);
+        expando[element] = probe;
+        // selectionStart and selectionEnd do not work if element is not attached to DOM.
+        app.attachToRenderDOM(element);
         var input = new InputTextLike(element, model, scope, ngModelOptions);
 
         element
@@ -555,7 +566,7 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = 'abc';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model']).toEqual('abc');
 
         inputElement.value = 'def';
@@ -565,7 +576,8 @@ void main() {
       });
 
       it('should write to input only if value is different',
-        (Injector i, Animate animate, EventHandler eventHandler) {
+        (Injector i, Animate animate, EventHandler eventHandler, Expando expando,
+        MockApplication app) {
 
         NodeAttrs nodeAttrs = new NodeAttrs(new DivElement());
 
@@ -577,7 +589,10 @@ void main() {
         nodeAttrs['ng-model'] = 'model';
         var model = new NgModel(scope, ngElement, dirInjector,
             nodeAttrs, new Animate(), null);
-        dom.querySelector('body').append(element);
+        ElementProbe probe = new ElementProbe(null, element, i, scope);
+        expando[element] = probe;
+        // selectionStart and selectionEnd do not work if element is not attached to DOM.
+        app.attachToRenderDOM(element);
         var input = new InputTextLike(element, model, scope, ngModelOptions);
 
         element
@@ -642,7 +657,7 @@ void main() {
         expect(model.pristine).toEqual(true);
         expect(model.dirty).toEqual(false);
 
-        _.triggerEvent(element, 'change');
+        _.triggerEvent(element, name: 'change');
 
         expect(model.pristine).toEqual(false);
         expect(model.dirty).toEqual(true);
@@ -662,11 +677,11 @@ void main() {
         expect(element.checked).toBe(false);
 
         element.checked = true;
-        _.triggerEvent(element, 'change');
+        _.triggerEvent(element, name: 'change');
         expect(scope.context['model']).toBe(1);
 
         element.checked = false;
-        _.triggerEvent(element, 'change');
+        _.triggerEvent(element, name: 'change');
         expect(scope.context['model']).toBe(0);
       });
 
@@ -693,11 +708,11 @@ void main() {
         var element = _.compile('<input type="checkbox" ng-model="model">');
 
         element.checked = true;
-        _.triggerEvent(element, 'change');
+        _.triggerEvent(element, name: 'change');
         expect(scope.context['model']).toBe(true);
 
         element.checked = false;
-        _.triggerEvent(element, 'change');
+        _.triggerEvent(element, name: 'change');
         expect(scope.context['model']).toBe(false);
       });
 
@@ -710,11 +725,11 @@ void main() {
         });
 
         element.checked = true;
-        _.triggerEvent(element, 'change');
+        _.triggerEvent(element, name: 'change');
         expect(scope.context['model']).toEqual('yes sir!');
 
         element.checked = false;
-        _.triggerEvent(element, 'change');
+        _.triggerEvent(element, name: 'change');
         expect(scope.context['model']).toEqual('no, sorry');
       });
 
@@ -763,7 +778,7 @@ void main() {
         TextAreaElement element = probe.element;
 
         element.value = 'abc';
-        _.triggerEvent(element, 'change');
+        _.triggerEvent(element, name: 'change');
         expect(_.rootScope.context['model']).toEqual('abc');
 
         element.value = 'def';
@@ -789,7 +804,7 @@ void main() {
         var model = new NgModel(scope, ngElement, dirInjector,
             nodeAttrs, new Animate(), null);
         dom.querySelector('body').append(element);
-        var input = new InputTextLike(element, model, scope, ngModelOptions);
+        var input = new InputTextLike(element, model, ngElement, scope, ngModelOptions);
 
         element
           ..value = 'abc'
@@ -829,15 +844,18 @@ void main() {
     });
 
     describe('type="radio"', () {
-      it('should update input value from model', () {
-        _.compile('<input type="radio" name="color" value="red" ng-model="color" probe="r">' +
-                  '<input type="radio" name="color" value="green" ng-model="color" probe="g">' +
-                  '<input type="radio" name="color" value="blue" ng-model="color" probe="b">');
+      it('should update input value from model', (MockApplication app) {
+        var elem = _.compile(
+                '''<div>
+                     <input type="radio" name="color" value="red" ng-model="color" probe="r">
+                     <input type="radio" name="color" value="green" ng-model="color" probe="g">
+                     <input type="radio" name="color" value="blue" ng-model="color" probe="b">
+                   </div>''');
         _.rootScope.apply();
 
-        RadioButtonInputElement redBtn = _.rootScope.context['r'].element;
-        RadioButtonInputElement greenBtn = _.rootScope.context['g'].element;
-        RadioButtonInputElement blueBtn = _.rootScope.context['b'].element;
+        RadioButtonInputElement redBtn = elem.querySelector('input[value="red"]');
+        RadioButtonInputElement greenBtn = elem.querySelector('input[value="green"]');
+        RadioButtonInputElement blueBtn = elem.querySelector('input[value="blue"]');
 
         expect(redBtn.checked).toBe(false);
         expect(greenBtn.checked).toBe(false);
@@ -858,24 +876,27 @@ void main() {
         expect(blueBtn.checked).toBe(false);
 
         // Should update model with value of checked element.
-        _.triggerEvent(redBtn, 'click');
+        _.triggerEvent(redBtn, name: 'click');
 
         expect(_.rootScope.context['color']).toEqual('red');
         expect(redBtn.checked).toBe(true);
         expect(greenBtn.checked).toBe(false);
         expect(blueBtn.checked).toBe(false);
 
-        _.triggerEvent(greenBtn, 'click');
+        _.triggerEvent(greenBtn, name: 'click');
         expect(_.rootScope.context['color']).toEqual('green');
         expect(redBtn.checked).toBe(false);
         expect(greenBtn.checked).toBe(true);
         expect(blueBtn.checked).toBe(false);
       });
 
-      it('should support ng-value', () {
-        _.compile('<input type="radio" name="color" ng-value="red" ng-model="color" probe="r">' +
-                  '<input type="radio" name="color" ng-value="green" ng-model="color" probe="g">' +
-                  '<input type="radio" name="color" ng-value="blue" ng-model="color" probe="b">');
+      it('should support ng-value', (MockApplication app) {
+        var elem = _.compile(
+            '''<div>
+                 <input type="radio" name="color" ng-value="red" ng-model="color" probe="r">
+                 <input type="radio" name="color" ng-value="green" ng-model="color" probe="g">
+                 <input type="radio" name="color" ng-value="blue" ng-model="color" probe="b">
+               </div>''');
 
         var red = {'name': 'RED'};
         var green = {'name': 'GREEN'};
@@ -887,9 +908,9 @@ void main() {
 
         _.rootScope.apply();
 
-        RadioButtonInputElement redBtn = _.rootScope.context['r'].element;
-        RadioButtonInputElement greenBtn = _.rootScope.context['g'].element;
-        RadioButtonInputElement blueBtn = _.rootScope.context['b'].element;
+        RadioButtonInputElement redBtn = elem.querySelector('input[ng-value="red"]');
+        RadioButtonInputElement greenBtn = elem.querySelector('input[ng-value="green"]');
+        RadioButtonInputElement blueBtn = elem.querySelector('input[ng-value="blue"]');
 
         expect(redBtn.checked).toBe(false);
         expect(greenBtn.checked).toBe(false);
@@ -912,14 +933,14 @@ void main() {
         expect(blueBtn.checked).toBe(false);
 
         // Should update model with value of checked element.
-        _.triggerEvent(redBtn, 'click');
+        _.triggerEvent(redBtn, name: 'click');
 
         expect(_.rootScope.context['color']).toEqual(red);
         expect(redBtn.checked).toBe(true);
         expect(greenBtn.checked).toBe(false);
         expect(blueBtn.checked).toBe(false);
 
-        _.triggerEvent(greenBtn, 'click');
+        _.triggerEvent(greenBtn, name: 'click');
         expect(_.rootScope.context['color']).toEqual(green);
         expect(redBtn.checked).toBe(false);
         expect(greenBtn.checked).toBe(true);
@@ -951,7 +972,7 @@ void main() {
         expect(input1.classes.contains("ng-pristine")).toBe(true);
 
         input1.checked = true;
-        _.triggerEvent(input1, 'click');
+        _.triggerEvent(input1, name: 'click');
         scope.apply();
 
         expect(model.pristine).toEqual(false);
@@ -959,7 +980,7 @@ void main() {
 
         input1.checked = false;
         input2.checked = true;
-        _.triggerEvent(input2, 'click');
+        _.triggerEvent(input2, name: 'click');
         scope.apply();
 
         expect(input1.classes.contains("ng-dirty")).toBe(true);
@@ -1025,7 +1046,7 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = 'xzy';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model']).toEqual('xzy');
 
         inputElement.value = '123';
@@ -1079,7 +1100,7 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = 'xzy';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model']).toEqual('xzy');
 
         inputElement.value = '123';
@@ -1175,7 +1196,7 @@ void main() {
         Element element = _.rootElement;
 
         element.innerHtml = 'abc';
-        _.triggerEvent(element, 'change');
+        _.triggerEvent(element, name: 'change');
         expect(_.rootScope.context['model']).toEqual('abc');
 
         element.innerHtml = 'def';
@@ -1265,7 +1286,7 @@ void main() {
         expect(inputElement2).not.toHaveClass('ng-dirty');
 
         inputElement1.value = '...hi...';
-        _.triggerEvent(inputElement1, 'change');
+        _.triggerEvent(inputElement1, name: 'change');
         scope.apply();
 
         expect(formElement).not.toHaveClass('ng-pristine');
@@ -1311,7 +1332,7 @@ void main() {
         expect(model.valid).toBe(false);
 
         inputElement.value = 'some value';
-        _.triggerEvent(inputElement, 'input');
+        _.triggerEvent(inputElement, name: 'input');
 
         expect(model.invalid).toBe(false);
         expect(model.valid).toBe(true);
@@ -1417,7 +1438,7 @@ void main() {
 
         expect(_.rootScope.context['model']).not.toEqual('waaaah');
 
-        _.triggerEvent(inputElement, 'input');
+        _.triggerEvent(inputElement, name: 'input');
 
         expect(_.rootScope.context['model']).toEqual('waaaah');
       });
@@ -1431,7 +1452,7 @@ void main() {
           TextAreaElement inputElement = probe.element;
 
           inputElement.value = 'xzy';
-          _.triggerEvent(inputElement, 'change');
+          _.triggerEvent(inputElement, name: 'change');
           _.rootScope.apply();
         })).toThrow('love');
 
@@ -1471,7 +1492,7 @@ void main() {
       expect(model.touched).toBe(false);
       expect(model.untouched).toBe(true);
 
-      _.triggerEvent(input, 'blur');
+      _.triggerEvent(input, name: 'blur');
 
       expect(model.touched).toBe(true);
       expect(model.untouched).toBe(false);
@@ -1590,7 +1611,7 @@ void main() {
         model.converter = new LowercaseValueParser();
 
         input.value = 'HELLO';
-        _.triggerEvent(input, 'change');
+        _.triggerEvent(input, name: 'change');
         _.rootScope.apply();
 
         expect(model.viewValue).toEqual('HELLO');
@@ -1632,7 +1653,7 @@ void main() {
         model1.converter = new FailedValueParser();
 
         input1.value = '123';
-        _.triggerEvent(input1, 'change');
+        _.triggerEvent(input1, name: 'change');
         _.rootScope.apply();
 
         expect(model1.viewValue).toEqual('123');
@@ -1654,7 +1675,7 @@ void main() {
         model.converter = new LowercaseValueParser();
 
         input.value = 'HI THERE';
-        _.triggerEvent(input, 'change');
+        _.triggerEvent(input, name: 'change');
         _.rootScope.apply();
 
         expect(model.viewValue).toEqual('HI THERE');
