@@ -23,7 +23,7 @@ env:
   - JOB=unit-dev
     CHANNEL=dev
     TESTS=dart2js
-    BROWSERS=SL_Chrome,SL_Firefox,SL_IE,SL_Safari
+    BROWSERS=SL_IE,SL_Safari
 #  - JOB=e2e-g3stable
 #    CHANNEL=stable
 #    TESTS=vm
