@@ -58,6 +58,17 @@ module.exports = function(config) {
           browserName: 'firefox',
           version: '30'
       },
+      'SL_IE': {
+          base: 'SauceLabs',
+          browserName: 'safari',
+          version: '6'
+      },
+      'SL_Safari': {
+          base: 'SauceLabs',
+          browserName: 'internet explorer',
+          platform: 'Windows 8.1',
+          version: '11'
+      },
       DartiumWithWebPlatform: {
         base: 'Dartium',
         flags: ['--enable-experimental-web-platform-features'] }
