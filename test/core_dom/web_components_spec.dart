@@ -45,7 +45,7 @@ main() {
     });
 
 
-    it('should bind to Custom Element properties', () {
+    iit('should bind to Custom Element properties', () {
       registerElement('tests-bound', {'prop-y': 10});
       _.compile('<tests-bound bind-prop-y=27></tests-bound>');
 
@@ -54,6 +54,7 @@ main() {
 
       _.rootScope.apply();
       expect(customProp('prop-y')).toEqual(27);
+      expect('ckck').toEqual('ckck force failure');
     });
 
 
