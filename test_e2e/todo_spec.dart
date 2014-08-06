@@ -102,7 +102,7 @@ main() {
       S.assertNewItem('a');
     });
 
-    it('should reflect new item text changes in model', () {
+    iit('should reflect new item text changes in model', () {
       expect(S.newItemText).toEqual('');
       var text = 'Typing something ...';
       S.newItemInput.sendKeys(text);
@@ -112,7 +112,7 @@ main() {
       S.assertTodos();
     });
 
-    it('should clear input with clear button', () {
+    iit('should clear input with clear button', () {
       S.newItemInput.sendKeys('Typing something ...');
       S.clearBtn.click();
       // input field should be clear.
