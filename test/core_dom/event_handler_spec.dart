@@ -48,9 +48,8 @@ main() {
     });
 
 
-    it('should register and handle event', (TestBed _, Application app) {
+    it('should register and handle event', (TestBed _, MockApplication app) {
       var e = _.compile(
-    it('should register and handle event', (TestBed _, Application app) {
         '''<div foo>
           <div on-abc="ctrl.invoked=true"></div>
         </div>''');

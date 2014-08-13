@@ -802,10 +802,10 @@ class InputRadio {
         (ngElement.node as dom.InputElement).checked = (value == ngValue.value);
       });
     };
-    ngElement.addEventListener('click', ((_) {
+    ngElement.addEventListener('click', (_) {
       if ((ngElement.node as dom.InputElement).checked) ngModel.viewValue = ngValue.value;
     });
-    ngElement.addEventListener('blur', ((event) {
+    ngElement.addEventListener('blur', (event) {
       ngModel.markAsTouched();
     });
   }
