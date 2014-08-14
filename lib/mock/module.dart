@@ -64,7 +64,7 @@ class AngularMockModule extends Module {
     bind(Logger);
     bind(MockHttpBackend);
     bind(Element, toFactory: (app) => app.element, inject: [MockApplication]);
-    bind(Node, inject: [Element]);
+    bind(Node, toInstanceOf: Element);
     bind(HttpBackend, toInstanceOf: MOCK_HTTP_BACKEND_KEY);
     bind(VmTurnZone, toFactory: () {
       return new VmTurnZone()
@@ -92,7 +92,7 @@ class MockApplication extends Application {
   }
 
   void attachToRenderDOM(Element element) {
-    document.body.append(this._element..append(element));
+    document.body.append(_element..append(element));
   }
 
   Injector createInjector() => throw 'MockApplications can not create injectors';

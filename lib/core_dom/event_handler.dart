@@ -59,7 +59,7 @@ class EventHandler {
     while (element != null && element != _rootNode) {
       var expression, probe;
       if (element is dom.Element) {
-        expression = (element as dom.Element).attributes[eventNameToAttrName(event.type)];
+        expression = element.attributes[eventNameToAttrName(event.type)];
         probe = _getProbe(element);
       }
       if (probe != null && probe.listeners[event.type] != null) {
@@ -89,12 +89,9 @@ class EventHandler {
   }
 
   ElementProbe _getProbe(dom.Node element) {
-    // var topElement = (rootNode is dom.ShadowRoot) ? rootNode.parentNode : rootNode;
     while (element != _rootNode.parentNode) {
       ElementProbe probe = _expando[element];
-      if (probe != null) {
-        return probe;
-      }
+      if (probe != null) return probe;
       element = element.parentNode;
     }
     return null;
@@ -126,8 +123,6 @@ class EventHandler {
 
 @Injectable()
 class ShadowRootEventHandler extends EventHandler {
-  ShadowRootEventHandler(dom.ShadowRoot shadowRoot,
-                         Expando expando,
-                         ExceptionHandler exceptionHandler)
-      : super(shadowRoot, expando, exceptionHandler);
+  ShadowRootEventHandler(dom.ShadowRoot shadowRoot, Expando expando, ExceptionHandler excHandler)
+      : super(shadowRoot, expando, excHandler);
 }

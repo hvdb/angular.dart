@@ -25,7 +25,7 @@ class _SpecInjector {
     moduleInjector = new ModuleInjector([moduleModule]);
   }
 
-  addModule(module) {
+  Module addModule(Module module) {
     if (injector != null) {
       throw ["Injector already created, can not add more modules."];
     }
@@ -33,7 +33,8 @@ class _SpecInjector {
     return module;
   }
 
-  module(fnOrModule, [declarationStack]) {
+
+  void module(fnOrModule, [declarationStack]) {
     if (injectorCreateLocation != null) {
       throw "Injector already created at:\n$injectorCreateLocation";
     }
@@ -51,7 +52,7 @@ class _SpecInjector {
     }
   }
 
-  inject(Function fn, [declarationStack]) {
+  void inject(Function fn, [declarationStack]) {
     try {
       if (injector == null) {
         injectorCreateLocation = declarationStack;
@@ -71,7 +72,7 @@ class _SpecInjector {
     injectorCreateLocation = null;
   }
 
-  _invoke(Injector injector, Function fn) {
+  dynamic _invoke(Injector injector, Function fn) {
     ClosureMirror cm = reflect(fn);
     MethodMirror mm = cm.function;
     List args = mm.parameters.map((ParameterMirror parameter) {

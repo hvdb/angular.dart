@@ -88,40 +88,23 @@ void main() {
       });
 
       it('should write to input only if the value is different',
-        (Injector i, Animate animate, EventHandler eventHandler, Expando expando) {
+          (RootScope scope, MockApplication app) {
+        var element = _.compile('<input type="text" ng-model="model" value="abc">');
+        app.attachToRenderDOM(element);
 
-        NodeAttrs nodeAttrs = new NodeAttrs(new DivElement());
+        element..selectionStart = 1
+               ..selectionEnd = 2;
 
-        var scope = _.rootScope;
-        var element = new dom.InputElement();
-        var ngElement = new NgElement(element, scope, animate, eventHandler);
-        var ngModelOptions = new NgModelOptions();
+        print(element.outerHtml);
 
-        nodeAttrs['ng-model'] = 'model';
-        var model = new NgModel(scope, ngElement, dirInjector,
-            nodeAttrs, new Animate(), null);
-        ElementProbe probe = new ElementProbe(null, element, i, scope);
-        expando[element] = probe;
-        dom.querySelector('body').append(element);
-        var input = new InputTextLike(model, ngElement, scope, ngModelOptions);
-
-        element
-            ..value = 'abc'
-            ..selectionStart = 1
-            ..selectionEnd = 2;
-
-        scope.apply(() {
-          scope.context['model'] = 'abc';
-        });
+        scope.apply('model = "abc"');
 
         expect(element.value).toEqual('abc');
         // No update.  selectionStart/End is unchanged.
         expect(element.selectionStart).toEqual(1);
         expect(element.selectionEnd).toEqual(2);
 
-        scope.apply(() {
-          scope.context['model'] = 'xyz';
-        });
+        scope.apply('model = "xyz"');
 
         // Value updated.  selectionStart/End changed.
         expect(element.value).toEqual('xyz');
@@ -371,42 +354,21 @@ void main() {
 
       });
 
-      it('should write to input only if value is different',
-        (Injector i, Animate animate, EventHandler eventHandler, Expando expando, MockApplication app) {
+      it('should write to input only if value is different', (RootScope scope, MockApplication app) {
 
-        NodeAttrs nodeAttrs = new NodeAttrs(new DivElement());
-
-        var scope = _.rootScope;
-        var element = new dom.InputElement();
-        var ngElement = new NgElement(element, scope, animate, eventHandler);
-        var ngModelOptions = new NgModelOptions();
-
-        nodeAttrs['ng-model'] = 'model';
-        var model = new NgModel(scope, ngElement, dirInjector,
-            nodeAttrs, new Animate(), null);
-        ElementProbe probe = new ElementProbe(null, element, i, scope);
-        expando[element] = probe;
-        // selectionStart and selectionEnd do not work if element is not attached to DOM.
+        var element = _.compile('<input type="password" ng-model="model">');
         app.attachToRenderDOM(element);
-        var input = new InputTextLike(model, scope, ngModelOptions);
 
-        element
-          ..value = 'abc'
-          ..selectionStart = 1
-          ..selectionEnd = 2;
+        element..value = 'abc'
+               ..selectionStart = 1
+        ..selectionEnd = 2;
 
-        scope.apply(() {
-          scope.context['model'] = 'abc';
-        });
-
+        scope.apply('model = "abc"');
         expect(element.value).toEqual('abc');
         expect(element.selectionStart).toEqual(1);
         expect(element.selectionEnd).toEqual(2);
 
-        scope.apply(() {
-          scope.context['model'] = 'xyz';
-        });
-
+        scope.apply('model = "xyz"');
         expect(element.value).toEqual('xyz');
         expect(element.selectionStart).toEqual(3);
         expect(element.selectionEnd).toEqual(3);
@@ -467,42 +429,22 @@ void main() {
       });
 
       it('should write to input only if value is different',
-        (Injector i, Animate animate, EventHandler eventHandler, Expando expando,
-         MockApplication app) {
+          (RootScope scope, MockApplication app) {
 
-        NodeAttrs nodeAttrs = new NodeAttrs(new DivElement());
-
-        var scope = _.rootScope;
-        var element = new dom.InputElement();
-        var ngElement = new NgElement(element, scope, animate, eventHandler);
-        var ngModelOptions = new NgModelOptions();
-
-        nodeAttrs['ng-model'] = 'model';
-        var model = new NgModel(scope, ngElement, dirInjector,
-            nodeAttrs, new Animate(), null);
-        ElementProbe probe = new ElementProbe(null, element, i, scope);
-        expando[element] = probe;
-        // selectionStart and selectionEnd do not work if element is not attached to DOM.
+        var element = _.compile('<input type="search" ng-model="model" value="abc">');
         app.attachToRenderDOM(element);
-        var input = new InputTextLike(model, scope, ngModelOptions);
 
-        element
-          ..value = 'abc'
-          ..selectionStart = 1
-          ..selectionEnd = 2;
+        element..selectionStart = 1
+               ..selectionEnd = 2;
 
-        scope.apply(() {
-          scope.context['model'] = 'abc';
-        });
+        scope.apply('model = "abc"');
 
         expect(element.value).toEqual('abc');
         // No update.  selectionStart/End is unchanged.
         expect(element.selectionStart).toEqual(1);
         expect(element.selectionEnd).toEqual(2);
 
-        scope.apply(() {
-          scope.context['model'] = 'xyz';
-        });
+        scope.apply('model = "xyz"');
 
         // Value updated.  selectionStart/End changed.
         expect(element.value).toEqual('xyz');
@@ -791,7 +733,7 @@ void main() {
       // NOTE(deboer): This test passes on Dartium, but fails in the content_shell.
       // The Dart team is looking into this bug.
       xit('should write to input only if value is different',
-        (Injector i, Animate animate, EventHandler eventHandler) {
+        (Injector i, Animate animate, EventHandler eventHandler, MockApplication app) {
 
         NodeAttrs nodeAttrs = new NodeAttrs(new DivElement());
 
@@ -803,7 +745,7 @@ void main() {
         nodeAttrs['ng-model'] = 'model';
         var model = new NgModel(scope, ngElement, dirInjector,
             nodeAttrs, new Animate(), null);
-        dom.querySelector('body').append(element);
+        app.attachToRenderDOM(element);
         var input = new InputTextLike(model, ngElement, scope, ngModelOptions);
 
         element
@@ -1154,7 +1096,7 @@ void main() {
         InputElement inputElement = probe.element;
 
         inputElement.value = '#000000';
-        _.triggerEvent(inputElement, 'change');
+        _.triggerEvent(inputElement, name: 'change');
         expect(_.rootScope.context['model']).toEqual('#000000');
 
         inputElement.value = '#ffffff';
