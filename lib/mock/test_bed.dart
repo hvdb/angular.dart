@@ -76,8 +76,8 @@ class TestBed {
    * Trigger a specific DOM element on a given node to test directives
    * which listen to events.
    */
-  triggerEvent(element, {name, type : 'MouseEvent', event}) {
-    var e = event == null ? new Event.eventType(type, name) : event;
+  triggerEvent(element, {name, type : 'MouseEvent', Event event}) {
+    Event e = event == null ? new Event.eventType(type, name) : event;
     element.dispatchEvent(e);
     if (!_isAttachedToRenderDOM(element)) _eventHandler.walkDomTreeAndExecute(element, e);
     // Since we are manually triggering event we need to simulate apply();

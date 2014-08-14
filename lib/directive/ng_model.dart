@@ -324,11 +324,8 @@ class InputCheckbox {
           ngModel.viewValue = _inputElement.checked ? ngTrueValue.value : ngFalseValue.value;
         });
     });
-    ngElement.addEventListener('blur', (_) {
-      ngModelOptions.executeBlurFunc(() {
-          ngModel.markAsTouched();
-        });
-    });
+    ngElement.addEventListener('blur', (_)
+        => ngModelOptions.executeBlurFunc(ngModel.markAsTouched));
   }
 }
 
@@ -420,12 +417,12 @@ class InputTextLike {
 @Decorator(selector: 'input[type=number][ng-model]')
 @Decorator(selector: 'input[type=range][ng-model]')
 class InputNumberLike {
-  dom.InputElement _inputElement;
   final NgModel ngModel;
   final NgModelOptions ngModelOptions;
   final NgElement ngElement;
   final Scope scope;
 
+  dom.InputElement get _inputElement => ngElement.node;
 
   // We can't use [inputElement.valueAsNumber] due to http://dartbug.com/15788
   num get typedValue => num.parse(_inputElement.value, (v) => double.NAN);
@@ -453,11 +450,13 @@ class InputNumberLike {
         }
       });
     };
-    ngElement.addEventListener('change', (event) => ngModelOptions.executeChangeFunc(() => processValue()));
-    ngElement.addEventListener('input', (event) => ngModelOptions.executeInputFunc(() => processValue()));
-    ngElement.addEventListener('blue', (_) => ngModelOptions.executeBlurFunc(() {
-      ngModel.markAsTouched();
-    }));
+
+    ngElement.addEventListener('change',
+        (_) => ngModelOptions.executeChangeFunc(processValue));
+    ngElement.addEventListener('input',
+        (_) => ngModelOptions.executeInputFunc(processValue));
+    ngElement.addEventListener('blur',
+        (_) => ngModelOptions.executeBlurFunc(ngModel.markAsTouched));
   }
 
   void processValue() {
